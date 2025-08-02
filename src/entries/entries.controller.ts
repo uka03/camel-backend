@@ -1,13 +1,29 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { EntriesService } from './entries.service';
 import { CreateEntryDto } from './dto/create-entry.dto';
+import { Role } from 'src/common/enums/role.enums';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('entries')
 export class EntriesController {
   constructor(private readonly entriesService: EntriesService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin, Role.Editor)
   @Post()
-  async create(@Body() createEntryDto: CreateEntryDto) {
+  async create(@User() user: any, @Body() createEntryDto: CreateEntryDto) {
+    createEntryDto.authorId = user.id;
     let response = await this.entriesService.create(createEntryDto);
     return {
       data: response,
@@ -17,10 +33,15 @@ export class EntriesController {
   }
 
   @Get()
-  async findAll() {
-    let response = await this.entriesService.findAll();
+  async findAll(
+    @Query('page') pageStr: string,
+    @Query('limit') limitStr: string,
+  ) {
+    let page = pageStr ? parseInt(pageStr, 10) : 1;
+    let limit = limitStr ? parseInt(limitStr, 10) : 10;
+    let response = await this.entriesService.findAll(page, limit);
     return {
-      data: response,
+      ...response,
       message: 'Entries retrieved successfully',
       status: 200,
     };

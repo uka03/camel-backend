@@ -10,9 +10,24 @@ export class EntriesService {
     return prisma.entry.create({ data: createEntryDto });
   }
 
-  findAll() {
-    return prisma.entry.findMany();
+  async findAll(page: number, take: number) {
+    const skip = (page - 1) * take;
+
+    const [data, total] = await Promise.all([
+      prisma.entry.findMany({ skip, take }),
+      prisma.entry.count(),
+    ]);
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit: take,
+        total,
+      },
+    };
   }
+
   findOne(id: string) {
     return prisma.entry.findUnique({ where: { id } });
   }
