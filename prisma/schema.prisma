@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Entry {npx prisma migrate dev
+  id        String   @id @default(uuid())
+  title     String
+  category  String
+  year      Int?
+  content   String
+  source    String?
+  location  String?
+  createdAt DateTime @default(now())
+}
