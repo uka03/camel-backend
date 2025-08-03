@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { CreateEntryDto } from './dto/create-entry.dto';
 
 const prisma = new PrismaClient();
@@ -10,11 +10,21 @@ export class EntriesService {
     return prisma.entry.create({ data: createEntryDto });
   }
 
-  async findAll(page: number, take: number) {
+  async findAll(page: number, take: number, text?: string) {
     const skip = (page - 1) * take;
+
+    const where: Prisma.EntryWhereInput = text
+      ? {
+          OR: [
+            { title: { contains: text, mode: Prisma.QueryMode.insensitive } },
+            { content: { contains: text, mode: Prisma.QueryMode.insensitive } },
+          ],
+        }
+      : {};
 
     const [data, total] = await Promise.all([
       prisma.entry.findMany({
+        where,
         skip,
         take,
         include: {
@@ -22,7 +32,7 @@ export class EntriesService {
           category: true,
         },
       }),
-      prisma.entry.count(),
+      prisma.entry.count({ where }), // 👈 зөв count
     ]);
 
     return {
@@ -32,6 +42,8 @@ export class EntriesService {
         limit: take,
         total,
       },
+      message: 'Entries retrieved successfully',
+      status: 200,
     };
   }
 

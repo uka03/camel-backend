@@ -36,10 +36,11 @@ export class EntriesController {
   async findAll(
     @Query('page') pageStr: string,
     @Query('limit') limitStr: string,
+    @Query('search') search: string,
   ) {
     let page = pageStr ? parseInt(pageStr, 10) : 1;
     let limit = limitStr ? parseInt(limitStr, 10) : 10;
-    let response = await this.entriesService.findAll(page, limit);
+    let response = await this.entriesService.findAll(page, limit, search);
     return {
       ...response,
       message: 'Entries retrieved successfully',
