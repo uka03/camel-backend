@@ -14,7 +14,14 @@ export class EntriesService {
     const skip = (page - 1) * take;
 
     const [data, total] = await Promise.all([
-      prisma.entry.findMany({ skip, take }),
+      prisma.entry.findMany({
+        skip,
+        take,
+        include: {
+          author: { select: { id: true, name: true, email: true } },
+          category: true,
+        },
+      }),
       prisma.entry.count(),
     ]);
 

@@ -12,14 +12,21 @@ model Entry {npx prisma migrate dev
   authorId  String  
   author    User    @relation(fields: [authorId], references: [id])
   title     String
-  category  String
+  categoryId String
+  category  Category @relation(fields: [categoryId], references: [id])   
   year      Int?
   content   String
   source    String?
   location  String?
   createdAt DateTime @default(now())
 }
-// schema.prisma
+model Category {npx prisma migrate dev
+  id        String   @id @default(uuid())
+  name      String   @unique
+  entries   Entry[]
+  createdAt DateTime @default(now())
+}
+
 enum Role {
   admin
   editor
@@ -31,7 +38,7 @@ model User {
   email    String   @unique
   password String
   name String
-  roles    Role[]   // массив байж болно (many roles)
+  roles    Role[]   
   createdAt DateTime @default(now())
   Entry Entry[]
 }

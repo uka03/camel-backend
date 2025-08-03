@@ -8,6 +8,15 @@ export class CreateUserDto {
   password: string;
   createdAt: Date;
 }
+
+export class UserResponseDto {
+  id: string;
+  email: string;
+  name: string;
+  roles: Role[];
+  createdAt: Date;
+}
+
 export class LoginDto {
   email: string;
   password: string;
