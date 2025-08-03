@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsInt } from 'class-validator';
-import { UserResponseDto } from 'src/auth/dto/user.dto';
+import { UserResponseDto } from 'src/users/dto/user.dto';
 export class CreateEntryDto {
   @IsString()
   title: string;

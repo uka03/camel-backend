@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, LoginDto } from './dto/user.dto';
+import { CreateUserDto, LoginDto } from './dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
 import { Role } from 'src/common/enums/role.enums';
@@ -61,40 +61,6 @@ export class AuthService {
       data: response,
       message: 'Хэрэглэгч амжилттай бүртгэгдлээ',
       status: 201,
-    };
-  }
-
-  async getUserById(id: string) {
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-    if (!user) {
-      return {
-        message: 'Хэрэглэгч олдсонгүй',
-        status: 404,
-      };
-    }
-    return {
-      data: user,
-      message: 'Хэрэглэгчийн мэдээлэл амжилттай авлаа',
-      status: 200,
-    };
-  }
-  async changeRole(id: string, roles: Role[]) {
-    const user = await prisma.user.update({
-      where: { id },
-      data: { roles: roles },
-    });
-    if (!user) {
-      return {
-        message: 'Хэрэглэгч олдсонгүй',
-        status: 404,
-      };
-    }
-    return {
-      data: user,
-      message: 'Хэрэглэгчийн үүрэг амжилттай өөрчлөгдлөө',
-      status: 200,
     };
   }
 }
